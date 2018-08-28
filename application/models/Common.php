@@ -9,7 +9,7 @@ class CommonModel implements \JsonSerializable, \ArrayAccess{
     use Attribute;
     public function __call($method, $arguments)
     {
-        $query = Mysql::getInstance()->initConfig();
+        $query = Mysql::getInstance()->initConfig(get_class($this));
         return call_user_func_array([$query,$method],$arguments);
     }
     static public function __callStatic($method, $arguments){
