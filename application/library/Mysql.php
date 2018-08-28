@@ -551,7 +551,7 @@ final class Mysql{
      * @return mixed
      * @throws ErrorException
      */
-    public function paginate($listRow,$flag=false,$query=null){
+    public function paginate($listRow,$flag=false,$query=[]){
         $page = param('page',1);
         $this->unset = false;
         $data['data'] = $this->page($page,$listRow)->select();
@@ -565,23 +565,30 @@ final class Mysql{
         if($flag===true){
             $str = '';
             if($data['last_page']>1) {
+                $default = [
+                    'ul'        => 'pagination',
+                    'active'    => 'active',
+                    'disabled'  => 'disabled',
+                    'li'        => ''
+                ];
+                $config = array_merge($default,$query);
                 $window = 6;
-                $str .= '<ul class="pagination">';
-                $str .= $this->buildPageHtml('prev', '', '', $data['current_page']);
+                $str .= '<ul class="'.$config['ul'].'">';
+                $str .= $this->buildPageHtml('prev', '', '', $data['current_page'],$config);
                 if ($data['last_page'] < $window + 6) {
-                    $str .= $this->buildPageHtml('loop', 1, $data['last_page'], $data['current_page']);
+                    $str .= $this->buildPageHtml('loop', 1, $data['last_page'], $data['current_page'],$config);
                 } elseif ($data['current_page'] <= $window) {
-                    $str .= $this->buildPageHtml('loop', 1, $window + 3, $data['current_page']);
-                    $str .= $this->buildPageHtml('behind', '', $data['last_page'], '');
+                    $str .= $this->buildPageHtml('loop', 1, $window + 3, $data['current_page'],$config);
+                    $str .= $this->buildPageHtml('behind', '', $data['last_page'], '',$config);
                 } elseif ($data['current_page'] > ($data['last_page'] - $window)) {
-                    $str .= $this->buildPageHtml('front', '', '', '');
-                    $str .= $this->buildPageHtml('loop', $data['last_page'] - $window - 2, $data['last_page'] + 1, $data['current_page']);
+                    $str .= $this->buildPageHtml('front', '', '', '',$config);
+                    $str .= $this->buildPageHtml('loop', $data['last_page'] - $window - 2, $data['last_page'] + 1, $data['current_page'],$config);
                 } else {
-                    $str .= $this->buildPageHtml('front', '', '', '');
-                    $str .= $this->buildPageHtml('loop', $data['current_page'] - $window / 2, $data['current_page'] + $window / 2, $data['current_page']);
-                    $str .= $this->buildPageHtml('behind', '', $data['last_page'], '');
+                    $str .= $this->buildPageHtml('front', '', '', '',$config);
+                    $str .= $this->buildPageHtml('loop', $data['current_page'] - $window / 2, $data['current_page'] + $window / 2, $data['current_page'],$config);
+                    $str .= $this->buildPageHtml('behind', '', $data['last_page'], '',$config);
                 }
-                $str .= $this->buildPageHtml('next', '', $data['last_page'], $data['current_page']);
+                $str .= $this->buildPageHtml('next', '', $data['last_page'], $data['current_page'],$config);
                 $str .= "</ul>";
             }
             $data['html'] = $str;
@@ -597,40 +604,40 @@ final class Mysql{
      * @param $current  当前页
      * @return string
      */
-    private function buildPageHtml($type,$start,$end,$current){
+    private function buildPageHtml($type,$start,$end,$current,$config){
         $str = '';
         switch ($type){
             case 'prev':
                 if($current==1){
-                    $str .= '<li class="disabled"><span>&laquo;</span></li>';
+                    $str .= '<li class="'.$config['disabled'].'"><span>&laquo;</span></li>';
                 }else {
-                    $str .= '<li><a href="?page=' . ($current - 1) . '">&laquo;</a></li>';
+                    $str .= '<li class="'.$config['li'].'"><a href="?page=' . ($current - 1) . '">&laquo;</a></li>';
                 }
                 break;
             case 'front':
-                $str .= '<li><a href="?page=1">1</a></li>';
-                $str .= '<li><a href="?page=2">2</a></li>';
-                $str .= '<li class="disabled"><span>...</span>';
+                $str .= '<li class="'.$config['li'].'"><a href="?page=1">1</a></li>';
+                $str .= '<li class="'.$config['li'].'"><a href="?page=2">2</a></li>';
+                $str .= '<li class="'.$config['disabled'].'"><span>...</span>';
                 break;
             case 'loop':
                 for($i=$start;$i<=$end;++$i){
                     if($i==$current){
-                        $str .= '<li class="active"><span>'.$i.'</span></li>';
+                        $str .= '<li class="'.$config['active'].'"><span>'.$i.'</span></li>';
                     }else{
-                        $str .= '<li><a href="?page='.$i.'">'.$i.'</a></li>';
+                        $str .= '<li class="'.$config['li'].'"><a href="?page='.$i.'">'.$i.'</a></li>';
                     }
                 }
                 break;
             case 'behind':
-                $str .= '<li class="disabled"><span>...</span>';
-                $str .= '<li><a href="?page='.($end-1).'">'.($end-1).'</a></li>';
-                $str .= '<li><a href="?page='.$end.'">'.$end.'</a></li>';
+                $str .= '<li class="'.$config['disabled'].'"><span>...</span>';
+                $str .= '<li class="'.$config['li'].'"><a href="?page='.($end-1).'">'.($end-1).'</a></li>';
+                $str .= '<li class="'.$config['li'].'"><a href="?page='.$end.'">'.$end.'</a></li>';
                 break;
             case 'next':
                 if($current==$end){
-                    $str .= '<li class="disabled"><span>&raquo;</span></li>';
+                    $str .= '<li class="'.$config['disabled'].'"><span>&raquo;</span></li>';
                 }else{
-                    $str .= '<li><a href="?page='.($current+1).'">&raquo;</a></li>';
+                    $str .= '<li class="'.$config['li'].'"><a href="?page='.($current+1).'">&raquo;</a></li>';
                 }
                 break;
             default :
