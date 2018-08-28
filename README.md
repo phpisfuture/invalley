@@ -2,7 +2,7 @@
 
 ### 内置smarty模版引擎
 
-### 交流，欢迎到https://message.phpisfuture.com留言
+### 交流，欢迎留言到https://message.phpisfuture.com
 
 ### 使用，终端运行 php ./server/server.php
 
