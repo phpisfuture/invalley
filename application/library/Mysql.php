@@ -856,7 +856,7 @@ final class Mysql{
                 $this->whereRaw($field.' '.$logic.' '.$condition[0].' AND '.$condition[1]);
                 break;
             case 'LIKE':
-                $this->whereRaw($field.' '.$logic." '".$condition."'");
+                $this->whereRaw($field.' '.$logic." '%".$condition."%'");
                 break;
             default:
                 $this->whereRaw($field.' '.$logic.' '.$condition);
