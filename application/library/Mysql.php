@@ -497,6 +497,7 @@ final class Mysql{
         if(''!==$name){
             $this->options['pk'] = strtolower(trim($name));
         }
+        return $this;
     }
 
     /**
