@@ -495,7 +495,7 @@ final class Mysql{
      */
     public function pk($name=''){
         if(''!==$name){
-            $this->options['pk'] = strtolower(trim(pk));
+            $this->options['pk'] = strtolower(trim($name));
         }
     }
 
