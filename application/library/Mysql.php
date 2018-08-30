@@ -254,6 +254,13 @@ final class Mysql{
         $this->unsetOption();
         return $this->execSql($sql);
     }
+
+    /**
+     * 执行sql
+     * [execSql description]
+     * @param  [type] $sql [description]
+     * @return [type]      [description]
+     */
     public function execSql($sql){
         try{
             $count = $this->connection->exec($sql);
@@ -400,6 +407,7 @@ final class Mysql{
         $sql = $this->buildSelectSql();
         if(isset($this->options['build_sql'])&&$this->options['build_sql']===true){
             $this->unsetOption();
+            $this->options['build_sql'] = true;
             return $sql;
         }
         return $this->querySql($sql);
