@@ -16,6 +16,31 @@ class CommonModel implements \JsonSerializable, \ArrayAccess{
         $query = Mysql::getInstance()->initConfig(static::class);
         return call_user_func_array([$query,$method],$arguments);
     }
+
+    /**
+     * 快捷生成sql语句的where搜索条件
+     * @param array $where
+     * @return Mysql
+     */
+    public static function myWhere($where=[]){
+        foreach($where as $k=>$v){
+            $obj = self::where(1);
+            $value = get($k,'');
+            if(!empty($value)){
+                switch ($v){
+                    case 'time':
+                        $value = explode('|',$value);
+                        $obj = $obj->where($k,'between',strtotime($value[0]).','.(strtotime($value[1])+86400));
+                        break;
+                    default:
+                        $obj = $obj->where($k,$v,$value);
+                        break;
+                }
+            }
+        }
+        return $obj;
+    }
+
     public function offsetSet($name, $value)
     {
 
