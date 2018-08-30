@@ -434,7 +434,15 @@ final class Mysql{
     public function find($data=null){
         $this->options['limit'] = ' limit 1';
         $info = $this->select($data);
-        return !empty($info)?$info[0]:null;
+        if(!empty($info)){
+            if(!empty($this->options['build_sql'])){
+                return $info;
+            }else{
+                return $info[0];
+            }
+        }else{
+            return null;
+        }
     }
 
     /**
