@@ -883,7 +883,7 @@ final class Mysql{
                     $this->whereExp($v[0],$v[1],$v[2]);
                 }
             }
-        }elseif(is_string($field)&&is_null($op)){
+        }elseif((is_string($field)||is_numeric($field))&&is_null($op)){
             $this->whereRaw($field);
         }elseif(is_string($field)&&(is_string($op)||is_numeric($op))&&is_null($condition)){
             $this->whereExp($field,'=',$op);
