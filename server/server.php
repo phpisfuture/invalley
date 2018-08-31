@@ -13,13 +13,11 @@ class HttpServer
     private function __construct() {
         $http = new swoole_http_server("127.0.0.1", 9501);
 
-        $http->set(
-            array(
-                'worker_num' => 16,
-                'daemonize' => true,
-                'max_request' => 10000
-            )
-        );
+        $http->set([
+            'worker_num' => 16,
+            'daemonize' => true,
+            'max_request' => 10000
+        ]);
 
         $http->on('WorkerStart' ,[$this , 'onWorkerStart']);
 
