@@ -11,7 +11,10 @@ class Bootstrap extends Yaf_Bootstrap_Abstract{
         Yaf_Registry::set("config", $config);
     }
     public function _initCommonFunction(){
+        //导入自定义函数
         Yaf_Loader::import(APP_PATH . "/application/functions.php");
+        //注册一个会在php中止时执行的函数(exit,throw时触发)
+        register_shutdown_function('handleFatal');
     }
     public function _initRoute(Yaf_Dispatcher $dispatcher){
         $router = Yaf_Dispatcher::getInstance()->getRouter();
