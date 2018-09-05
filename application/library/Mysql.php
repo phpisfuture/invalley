@@ -689,6 +689,9 @@ final class Mysql{
     private function aggregate($type,$filed){
         $this->field($type.'('.$filed.') AS '.$type);
         $sql = $this->buildSelectSql();
+        if($this->options['build_sql']===true){
+            return $sql;
+        }
         return intval($this->querySql($sql)[0][$type]);
     }
 
