@@ -227,7 +227,7 @@ if(!function_exists('cookie')){
             return $status;
         }elseif(is_string($name)&&is_null($value)){
             $requestObj = Yaf_Registry::get('SWOOLE_HTTP_REQUEST');
-            return !empty($requestObj->cookie($name))?$requestObj->cookie($name):'';
+            return !empty($requestObj->cookie[$name])?$requestObj->cookie[$name]:'';
         }
     }
 }
@@ -243,7 +243,7 @@ if(!function_exists('swoole_header')){
             }
         }elseif(!empty($key)&&empty($value)){
             $requestObj = Yaf_Registry::get('SWOOLE_HTTP_REQUEST');
-            return $requestObj->header(strtolower($key));
+            return $requestObj->header[strtolower($key)];
         }else{
             return false;
         }
