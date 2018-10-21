@@ -357,3 +357,96 @@ if(!function_exists('get_swoole_ip')){
         return $request->header['x-real-ip'];
     }
 }
+/**
+ * 检查一个函数是否可用
+ * [function_usable description]
+ * @param  [type] $function_name [description]
+ * @return [type]                [description]
+ */
+if(!function_exists('function_usable')){
+    function function_usable($function_name)
+    {
+        static $_suhosin_func_blacklist;
+
+        if (function_exists($function_name))
+        {
+            if ( !isset($_suhosin_func_blacklist))
+            {
+                $_suhosin_func_blacklist = extension_loaded('suhosin')
+                    ? explode(',', trim(ini_get('suhosin.executor.func.blacklist')))
+                    : array();
+            }
+
+            return !in_array($function_name, $_suhosin_func_blacklist, TRUE);
+        }
+
+        return FALSE;
+    }
+}
+if (!function_exists('is_https')) {
+    function is_https()
+    {
+        if ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+        {
+            return TRUE;
+        }
+        elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+        {
+            return TRUE;
+        }
+        elseif ( ! empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off')
+        {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+}
+if (!function_exists('is_php')) {
+    function is_php($version)
+    {
+        static $_is_php;
+        $version = (string) $version;
+
+        if ( ! isset($_is_php[$version]))
+        {
+            $_is_php[$version] = version_compare(PHP_VERSION, $version, '>=');
+        }
+
+        return $_is_php[$version];
+    }
+}
+if (!function_exists('is_really_writable')) {
+    function is_really_writable($file)
+    {
+        // If we're on a Unix server with safe_mode off we call is_writable
+        if (DIRECTORY_SEPARATOR === '/' && (is_php('5.4') OR ! ini_get('safe_mode')))
+        {
+            return is_writable($file);
+        }
+
+        /* For Windows servers and safe_mode "on" installations we'll actually
+         * write a file then read it. Bah...
+         */
+        if (is_dir($file))
+        {
+            $file = rtrim($file, '/').'/'.md5(mt_rand());
+            if (($fp = @fopen($file, 'ab')) === FALSE)
+            {
+                return FALSE;
+            }
+
+            fclose($fp);
+            @chmod($file, 0777);
+            @unlink($file);
+            return TRUE;
+        }
+        elseif ( ! is_file($file) OR ($fp = @fopen($file, 'ab')) === FALSE)
+        {
+            return FALSE;
+        }
+
+        fclose($fp);
+        return TRUE;
+    }
+}
